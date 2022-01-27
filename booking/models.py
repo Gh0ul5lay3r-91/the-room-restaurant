@@ -6,12 +6,13 @@ from cloudinary.models import CloudinaryField
 # Create your models here.
 class Restaurant(models.Model):
 
+    name = models.TextField(unique=True, null=True)
     opening_time = models.TimeField(default=time(11, 00))
     closing_time = models.TimeField(default=time(10, 00))
     menu = CloudinaryField('image', default='placeholder', use_filename=True, help_text='image of restaurants menu')
 
     def __str__(self):
-        return self.restaurant_name
+        return self.name
 
 
 class Table(models.Model):
@@ -24,8 +25,8 @@ class Table(models.Model):
         (6, 'Table of 6'),
     ]
 
+    number = models.IntegerField(default=0)
     size = models.IntegerField(choices=TABLE_SIZE)
-    restaurant_name = models.ForeignKey(Restaurant, on_delete=models.SET_NULL, null=True, related_name='name')
 
     def __str__(self):
         return f"A table of {self.size} persons"
@@ -42,8 +43,7 @@ class Booking(models.Model):
         (6, '6 persons'),
     ]
 
-    booking_id = models.CharField(max_length=6, unique=True)
-    customer_name = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='name')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='customer')
     party_size = models.IntegerField(choices=PARTY_SIZE, default=2)
     created_on = models.DateTimeField(auto_now=True)
     start_time = models.TimeField(auto_now=False, auto_now_add=False, default=time(12, 00))
@@ -52,7 +52,8 @@ class Booking(models.Model):
     email = models.EmailField(max_length=250)
     date = models.DateField(default=date.today)
     updated_on = models.DateTimeField(auto_now=True)
-    table_number = models.ManyToManyField(Table, related_name='number')
+    table = models.ManyToManyField(Table, related_name='tables')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, null=True)
 
     class Meta:
         ordering = ['-created_on']
@@ -62,5 +63,6 @@ class Booking(models.Model):
         end_time = (datetime.combine(date.today(), self.time)) + timedelta(hours=2)
         return end_time.time()
     
+
     def __str__(self):
         return f"A table of {self.party_size} on {datetime.strftime(self.date, '%d-%m-%y')}"
