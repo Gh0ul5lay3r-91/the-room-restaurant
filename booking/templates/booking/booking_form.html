@@ -7,6 +7,19 @@
     <title>Booking Form</title>
 </head>
 <body>
-    <h1>Test</h1>
+    <h1>Book a Table</h1>
+    <!-- {% if submitted %}
+    Your Booking has been submitted successfully
+
+    {% else %}
+
+    {% endif %} -->
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
