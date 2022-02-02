@@ -4,6 +4,12 @@ from .models import Restaurant, Booking, Table
 from .forms import BookingForm, RestaurantForm
 
 # Create your views here.
+class HomeView(View):
+
+    def get(self, request):
+        return render(request, 'booking/index.html')
+
+
 class BookingView(View):
 
     def get(self, request):
